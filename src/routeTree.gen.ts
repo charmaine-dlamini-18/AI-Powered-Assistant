@@ -9,8 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReportRouteImport } from './routes/report'
+import { Route as PetitionsRouteImport } from './routes/petitions'
+import { Route as MapRouteImport } from './routes/map'
+import { Route as ForumRouteImport } from './routes/forum'
+import { Route as DirectoryRouteImport } from './routes/directory'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PetitionsRoute = PetitionsRouteImport.update({
+  id: '/petitions',
+  path: '/petitions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForumRoute = ForumRouteImport.update({
+  id: '/forum',
+  path: '/forum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DirectoryRoute = DirectoryRouteImport.update({
+  id: '/directory',
+  path: '/directory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlertsRoute = AlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +61,130 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/directory': typeof DirectoryRoute
+  '/forum': typeof ForumRoute
+  '/map': typeof MapRoute
+  '/petitions': typeof PetitionsRoute
+  '/report': typeof ReportRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/directory': typeof DirectoryRoute
+  '/forum': typeof ForumRoute
+  '/map': typeof MapRoute
+  '/petitions': typeof PetitionsRoute
+  '/report': typeof ReportRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/alerts': typeof AlertsRoute
+  '/analytics': typeof AnalyticsRoute
+  '/directory': typeof DirectoryRoute
+  '/forum': typeof ForumRoute
+  '/map': typeof MapRoute
+  '/petitions': typeof PetitionsRoute
+  '/report': typeof ReportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/alerts'
+    | '/analytics'
+    | '/directory'
+    | '/forum'
+    | '/map'
+    | '/petitions'
+    | '/report'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/alerts'
+    | '/analytics'
+    | '/directory'
+    | '/forum'
+    | '/map'
+    | '/petitions'
+    | '/report'
+  id:
+    | '__root__'
+    | '/'
+    | '/alerts'
+    | '/analytics'
+    | '/directory'
+    | '/forum'
+    | '/map'
+    | '/petitions'
+    | '/report'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AlertsRoute: typeof AlertsRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  DirectoryRoute: typeof DirectoryRoute
+  ForumRoute: typeof ForumRoute
+  MapRoute: typeof MapRoute
+  PetitionsRoute: typeof PetitionsRoute
+  ReportRoute: typeof ReportRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/petitions': {
+      id: '/petitions'
+      path: '/petitions'
+      fullPath: '/petitions'
+      preLoaderRoute: typeof PetitionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forum': {
+      id: '/forum'
+      path: '/forum'
+      fullPath: '/forum'
+      preLoaderRoute: typeof ForumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/directory': {
+      id: '/directory'
+      path: '/directory'
+      fullPath: '/directory'
+      preLoaderRoute: typeof DirectoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alerts': {
+      id: '/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +197,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AlertsRoute: AlertsRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  DirectoryRoute: DirectoryRoute,
+  ForumRoute: ForumRoute,
+  MapRoute: MapRoute,
+  PetitionsRoute: PetitionsRoute,
+  ReportRoute: ReportRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
