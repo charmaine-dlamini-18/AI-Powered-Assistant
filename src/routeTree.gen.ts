@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ReportRouteImport } from './routes/report'
+import { Route as PetitionsRouteImport } from './routes/petitions'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as ForumRouteImport } from './routes/forum'
 import { Route as DirectoryRouteImport } from './routes/directory'
@@ -19,6 +20,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const ReportRoute = ReportRouteImport.update({
   id: '/report',
   path: '/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PetitionsRoute = PetitionsRouteImport.update({
+  id: '/petitions',
+  path: '/petitions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MapRoute = MapRouteImport.update({
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/directory': typeof DirectoryRoute
   '/forum': typeof ForumRoute
   '/map': typeof MapRoute
+  '/petitions': typeof PetitionsRoute
   '/report': typeof ReportRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/directory': typeof DirectoryRoute
   '/forum': typeof ForumRoute
   '/map': typeof MapRoute
+  '/petitions': typeof PetitionsRoute
   '/report': typeof ReportRoute
 }
 export interface FileRoutesById {
@@ -70,13 +78,28 @@ export interface FileRoutesById {
   '/directory': typeof DirectoryRoute
   '/forum': typeof ForumRoute
   '/map': typeof MapRoute
+  '/petitions': typeof PetitionsRoute
   '/report': typeof ReportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/alerts' | '/directory' | '/forum' | '/map' | '/report'
+  fullPaths:
+    | '/'
+    | '/alerts'
+    | '/directory'
+    | '/forum'
+    | '/map'
+    | '/petitions'
+    | '/report'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/alerts' | '/directory' | '/forum' | '/map' | '/report'
+  to:
+    | '/'
+    | '/alerts'
+    | '/directory'
+    | '/forum'
+    | '/map'
+    | '/petitions'
+    | '/report'
   id:
     | '__root__'
     | '/'
@@ -84,6 +107,7 @@ export interface FileRouteTypes {
     | '/directory'
     | '/forum'
     | '/map'
+    | '/petitions'
     | '/report'
   fileRoutesById: FileRoutesById
 }
@@ -93,6 +117,7 @@ export interface RootRouteChildren {
   DirectoryRoute: typeof DirectoryRoute
   ForumRoute: typeof ForumRoute
   MapRoute: typeof MapRoute
+  PetitionsRoute: typeof PetitionsRoute
   ReportRoute: typeof ReportRoute
 }
 
@@ -103,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/report'
       fullPath: '/report'
       preLoaderRoute: typeof ReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/petitions': {
+      id: '/petitions'
+      path: '/petitions'
+      fullPath: '/petitions'
+      preLoaderRoute: typeof PetitionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/map': {
@@ -149,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   DirectoryRoute: DirectoryRoute,
   ForumRoute: ForumRoute,
   MapRoute: MapRoute,
+  PetitionsRoute: PetitionsRoute,
   ReportRoute: ReportRoute,
 }
 export const routeTree = rootRouteImport
