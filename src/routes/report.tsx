@@ -42,6 +42,74 @@ function ReportPage() {
   const [urgency, setUrgency] = useState("Medium");
   const [anonymous, setAnonymous] = useState(false);
   const [suggested, setSuggested] = useState<string | null>(null);
+  const [listening, setListening] = useState(false);
+  const [translating, setTranslating] = useState(false);
+  const [lang, setLang] = useState<"en" | "zu">("en");
+  const recognitionRef = useRef<any>(null);
+
+  const toggleVoice = () => {
+    const SR: any =
+      (typeof window !== "undefined" &&
+        ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)) ||
+      null;
+    if (!SR) {
+      toast.error("Voice input not supported in this browser. Try Chrome on Android or desktop.");
+      return;
+    }
+    if (listening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      return;
+    }
+    const rec = new SR();
+    rec.lang = lang === "zu" ? "zu-ZA" : "en-ZA";
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onstart = () => setListening(true);
+    rec.onerror = (e: any) => {
+      setListening(false);
+      toast.error(`Voice error: ${e.error || "unknown"}`);
+    };
+    rec.onend = () => setListening(false);
+    rec.onresult = (e: any) => {
+      let text = "";
+      for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
+      setDescription((prev) => (prev ? prev + " " : "") + text.trim());
+    };
+    recognitionRef.current = rec;
+    try {
+      rec.start();
+      toast.info(lang === "zu" ? "Ngilalele… khuluma manje." : "Listening… speak now.");
+    } catch {
+      setListening(false);
+    }
+  };
+
+  const translate = async () => {
+    const text = description.trim();
+    if (!text) {
+      toast.info("Write something first, then translate.");
+      return;
+    }
+    const from = lang;
+    const to = lang === "en" ? "zu" : "en";
+    setTranslating(true);
+    try {
+      const res = await fetch(
+        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`,
+      );
+      const data = await res.json();
+      const translated: string | undefined = data?.responseData?.translatedText;
+      if (!translated) throw new Error("No translation");
+      setDescription(translated);
+      setLang(to);
+      toast.success(to === "zu" ? "Kuhunyushelwe kusiZulu" : "Translated to English");
+    } catch (err) {
+      toast.error("Translation failed. Check your connection and try again.");
+    } finally {
+      setTranslating(false);
+    }
+  };
+
 
   const runAI = () => {
     if (!description.trim()) {
