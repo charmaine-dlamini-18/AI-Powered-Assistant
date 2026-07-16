@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { MapPin, Filter, Layers, Droplets, Zap, Construction, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { REPORTS, statusColor } from "@/lib/mock-data";
+
+const CommunityMap = lazy(() => import("@/components/community-map"));
 
 export const Route = createFileRoute("/map")({
   head: () => ({
