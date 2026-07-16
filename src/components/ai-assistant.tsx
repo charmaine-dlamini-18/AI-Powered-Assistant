@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useRouterState } from "@tanstack/react-router";
 import { Bot, Send, X, Sparkles, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
