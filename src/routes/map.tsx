@@ -39,6 +39,9 @@ const iconFor = (cat: string) => {
 function MapPage() {
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState("all");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const filtered = REPORTS.filter(
     (r) =>
@@ -46,14 +49,6 @@ function MapPage() {
       (status === "all" || r.status === status),
   );
 
-  // Pseudo-random positions from id for the "map"
-  const pos = (id: string) => {
-    const n = parseInt(id.replace(/\D/g, ""), 10);
-    return {
-      top: `${10 + ((n * 13) % 75)}%`,
-      left: `${8 + ((n * 29) % 82)}%`,
-    };
-  };
 
   return (
     <div className="mx-auto max-w-7xl space-y-4 p-4 sm:p-6 lg:p-8">
