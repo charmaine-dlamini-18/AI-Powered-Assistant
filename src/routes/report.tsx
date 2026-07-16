@@ -171,13 +171,40 @@ function ReportPage() {
                   className="mt-1.5"
                 />
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                  <Button type="button" size="sm" variant="ghost" className="text-xs">
-                    <Mic className="mr-1.5 h-3.5 w-3.5" /> Voice input
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={listening ? "default" : "ghost"}
+                    className="text-xs"
+                    onClick={toggleVoice}
+                  >
+                    {listening ? (
+                      <>
+                        <MicOff className="mr-1.5 h-3.5 w-3.5" /> Stop
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="mr-1.5 h-3.5 w-3.5" /> Voice ({lang === "zu" ? "isiZulu" : "English"})
+                      </>
+                    )}
                   </Button>
-                  <Button type="button" size="sm" variant="ghost" className="text-xs">
-                    <Languages className="mr-1.5 h-3.5 w-3.5" /> Translate EN ⇄ isiZulu
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="text-xs"
+                    onClick={translate}
+                    disabled={translating}
+                  >
+                    {translating ? (
+                      <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Languages className="mr-1.5 h-3.5 w-3.5" />
+                    )}
+                    {lang === "en" ? "Translate → isiZulu" : "Translate → English"}
                   </Button>
                 </div>
+
               </div>
 
               <div>
