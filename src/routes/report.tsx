@@ -245,12 +245,12 @@ function ReportPage() {
                   {["Low", "Medium", "High", "Critical"].map((u) => (
                     <label
                       key={u}
-                      className={`flex cursor-pointer items-center gap-2 rounded-lg border p-2.5 text-sm transition ${
+                      className={`flex min-w-0 cursor-pointer items-center gap-2 rounded-lg border px-2.5 py-2 text-sm transition ${
                         urgency === u ? "border-primary bg-primary/5" : "hover:bg-muted/50"
                       }`}
                     >
-                      <RadioGroupItem value={u} />
-                      {u}
+                      <RadioGroupItem value={u} className="shrink-0" />
+                      <span className="truncate">{u}</span>
                     </label>
                   ))}
                 </RadioGroup>

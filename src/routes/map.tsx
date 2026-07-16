@@ -65,7 +65,7 @@ function MapPage() {
               <Filter className="mr-1 h-4 w-4" />
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[1000]">
               <SelectItem value="all">All categories</SelectItem>
               <SelectItem value="water">Water</SelectItem>
               <SelectItem value="electric">Electricity</SelectItem>
@@ -78,7 +78,7 @@ function MapPage() {
               <Layers className="mr-1 h-4 w-4" />
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[1000]">
               <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="Submitted">Submitted</SelectItem>
               <SelectItem value="Under Review">Under Review</SelectItem>
