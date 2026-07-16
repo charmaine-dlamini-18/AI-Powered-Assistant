@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Camera, MapPin, Sparkles, Mic, Send, Languages, ShieldAlert } from "lucide-react";
+import { Camera, MapPin, Sparkles, Mic, MicOff, Send, Languages, ShieldAlert, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
