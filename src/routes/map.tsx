@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { MapPin, Filter, Layers, Droplets, Zap, Construction, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { REPORTS, statusColor } from "@/lib/mock-data";
+
+const CommunityMap = lazy(() => import("@/components/community-map"));
 
 export const Route = createFileRoute("/map")({
   head: () => ({
@@ -37,6 +39,9 @@ const iconFor = (cat: string) => {
 function MapPage() {
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState("all");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const filtered = REPORTS.filter(
     (r) =>
@@ -44,14 +49,6 @@ function MapPage() {
       (status === "all" || r.status === status),
   );
 
-  // Pseudo-random positions from id for the "map"
-  const pos = (id: string) => {
-    const n = parseInt(id.replace(/\D/g, ""), 10);
-    return {
-      top: `${10 + ((n * 13) % 75)}%`,
-      left: `${8 + ((n * 29) % 82)}%`,
-    };
-  };
 
   return (
     <div className="mx-auto max-w-7xl space-y-4 p-4 sm:p-6 lg:p-8">
@@ -95,66 +92,34 @@ function MapPage() {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         {/* Map surface */}
-        <Card className="overflow-hidden border-none shadow-[var(--shadow-soft)]">
-          <div
-            className="relative h-[520px] w-full"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 30% 40%, oklch(0.9 0.05 155 / 0.5), transparent 60%), radial-gradient(circle at 70% 65%, oklch(0.85 0.06 250 / 0.5), transparent 55%), linear-gradient(120deg, oklch(0.96 0.01 250), oklch(0.93 0.02 155))",
-            }}
-          >
-            {/* Grid overlay */}
-            <div
-              className="absolute inset-0 opacity-40"
-              style={{
-                backgroundImage:
-                  "linear-gradient(oklch(0.85 0.02 250 / 0.4) 1px, transparent 1px), linear-gradient(90deg, oklch(0.85 0.02 250 / 0.4) 1px, transparent 1px)",
-                backgroundSize: "40px 40px",
-              }}
-            />
-
-            {/* Heat blobs */}
-            <div className="pointer-events-none absolute left-[20%] top-[30%] h-40 w-40 rounded-full bg-destructive/25 blur-3xl" />
-            <div className="pointer-events-none absolute right-[15%] top-[55%] h-32 w-32 rounded-full bg-warning/30 blur-3xl" />
-
-            {/* Pins */}
-            {filtered.map((r) => {
-              const Icon = iconFor(r.category);
-              const p = pos(r.id);
-              const tone =
-                r.status === "Resolved"
-                  ? "bg-success text-success-foreground"
-                  : r.status === "In Progress" || r.status === "Assigned"
-                  ? "bg-warning text-warning-foreground"
-                  : "bg-primary text-primary-foreground";
-              return (
-                <div
-                  key={r.id}
-                  className="group absolute -translate-x-1/2 -translate-y-1/2"
-                  style={{ top: p.top, left: p.left }}
-                >
-                  <div className={`grid h-9 w-9 place-items-center rounded-full ${tone} shadow-lg ring-4 ring-white/60 transition group-hover:scale-110`}>
-                    <Icon className="h-4 w-4" />
-                  </div>
-                  <div className="pointer-events-none absolute left-1/2 top-full mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-card px-2 py-1 text-[11px] shadow-lg group-hover:block">
-                    <div className="font-semibold">{r.title}</div>
-                    <div className="text-muted-foreground">{r.location} · {r.status}</div>
-                  </div>
+        <Card className="relative overflow-hidden border-none shadow-[var(--shadow-soft)]">
+          {mounted ? (
+            <Suspense
+              fallback={
+                <div className="grid h-[520px] w-full place-items-center bg-muted/40 text-sm text-muted-foreground">
+                  Loading map…
                 </div>
-              );
-            })}
+              }
+            >
+              <CommunityMap reports={filtered} />
+            </Suspense>
+          ) : (
+            <div className="grid h-[520px] w-full place-items-center bg-muted/40 text-sm text-muted-foreground">
+              Loading map…
+            </div>
+          )}
 
-            {/* Legend */}
-            <div className="absolute bottom-4 left-4 flex flex-wrap gap-2 rounded-xl bg-card/95 p-2 text-[11px] shadow-lg backdrop-blur">
-              <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-primary" /> Reported</span>
-              <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-warning" /> In Progress</span>
-              <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-success" /> Resolved</span>
-            </div>
-            <div className="absolute right-4 top-4 rounded-xl bg-card/95 px-3 py-1.5 text-[11px] font-medium shadow-lg backdrop-blur">
-              Mvutshini · Port Shepstone
-            </div>
+          {/* Legend */}
+          <div className="pointer-events-none absolute bottom-4 left-4 z-[400] flex flex-wrap gap-2 rounded-xl bg-card/95 p-2 text-[11px] shadow-lg backdrop-blur">
+            <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-primary" /> Reported</span>
+            <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-warning" /> In Progress</span>
+            <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-success" /> Resolved</span>
+          </div>
+          <div className="pointer-events-none absolute right-4 top-4 z-[400] rounded-xl bg-card/95 px-3 py-1.5 text-[11px] font-medium shadow-lg backdrop-blur">
+            Mvutshini · Port Shepstone
           </div>
         </Card>
+
 
         {/* List */}
         <div className="space-y-2">

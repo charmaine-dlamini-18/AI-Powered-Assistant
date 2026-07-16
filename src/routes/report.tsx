@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Camera, MapPin, Sparkles, Mic, Send, Languages, ShieldAlert } from "lucide-react";
+import { Camera, MapPin, Sparkles, Mic, MicOff, Send, Languages, ShieldAlert, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,74 @@ function ReportPage() {
   const [urgency, setUrgency] = useState("Medium");
   const [anonymous, setAnonymous] = useState(false);
   const [suggested, setSuggested] = useState<string | null>(null);
+  const [listening, setListening] = useState(false);
+  const [translating, setTranslating] = useState(false);
+  const [lang, setLang] = useState<"en" | "zu">("en");
+  const recognitionRef = useRef<any>(null);
+
+  const toggleVoice = () => {
+    const SR: any =
+      (typeof window !== "undefined" &&
+        ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)) ||
+      null;
+    if (!SR) {
+      toast.error("Voice input not supported in this browser. Try Chrome on Android or desktop.");
+      return;
+    }
+    if (listening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      return;
+    }
+    const rec = new SR();
+    rec.lang = lang === "zu" ? "zu-ZA" : "en-ZA";
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onstart = () => setListening(true);
+    rec.onerror = (e: any) => {
+      setListening(false);
+      toast.error(`Voice error: ${e.error || "unknown"}`);
+    };
+    rec.onend = () => setListening(false);
+    rec.onresult = (e: any) => {
+      let text = "";
+      for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
+      setDescription((prev) => (prev ? prev + " " : "") + text.trim());
+    };
+    recognitionRef.current = rec;
+    try {
+      rec.start();
+      toast.info(lang === "zu" ? "Ngilalele… khuluma manje." : "Listening… speak now.");
+    } catch {
+      setListening(false);
+    }
+  };
+
+  const translate = async () => {
+    const text = description.trim();
+    if (!text) {
+      toast.info("Write something first, then translate.");
+      return;
+    }
+    const from = lang;
+    const to = lang === "en" ? "zu" : "en";
+    setTranslating(true);
+    try {
+      const res = await fetch(
+        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`,
+      );
+      const data = await res.json();
+      const translated: string | undefined = data?.responseData?.translatedText;
+      if (!translated) throw new Error("No translation");
+      setDescription(translated);
+      setLang(to);
+      toast.success(to === "zu" ? "Kuhunyushelwe kusiZulu" : "Translated to English");
+    } catch (err) {
+      toast.error("Translation failed. Check your connection and try again.");
+    } finally {
+      setTranslating(false);
+    }
+  };
+
 
   const runAI = () => {
     if (!description.trim()) {
@@ -103,13 +171,40 @@ function ReportPage() {
                   className="mt-1.5"
                 />
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                  <Button type="button" size="sm" variant="ghost" className="text-xs">
-                    <Mic className="mr-1.5 h-3.5 w-3.5" /> Voice input
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={listening ? "default" : "ghost"}
+                    className="text-xs"
+                    onClick={toggleVoice}
+                  >
+                    {listening ? (
+                      <>
+                        <MicOff className="mr-1.5 h-3.5 w-3.5" /> Stop
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="mr-1.5 h-3.5 w-3.5" /> Voice ({lang === "zu" ? "isiZulu" : "English"})
+                      </>
+                    )}
                   </Button>
-                  <Button type="button" size="sm" variant="ghost" className="text-xs">
-                    <Languages className="mr-1.5 h-3.5 w-3.5" /> Translate EN ⇄ isiZulu
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="text-xs"
+                    onClick={translate}
+                    disabled={translating}
+                  >
+                    {translating ? (
+                      <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Languages className="mr-1.5 h-3.5 w-3.5" />
+                    )}
+                    {lang === "en" ? "Translate → isiZulu" : "Translate → English"}
                   </Button>
                 </div>
+
               </div>
 
               <div>
