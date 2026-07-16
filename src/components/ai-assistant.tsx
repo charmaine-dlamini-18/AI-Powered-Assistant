@@ -94,7 +94,7 @@ export function AIAssistant() {
       )}
 
       {open && (
-        <Card className="fixed bottom-5 right-5 z-50 flex h-[560px] w-[min(92vw,400px)] flex-col overflow-hidden rounded-2xl border-2 p-0 shadow-[var(--shadow-elevated)]">
+        <Card className="fixed inset-x-3 bottom-3 top-3 z-50 mx-auto flex w-[min(92vw,400px)] flex-col overflow-hidden rounded-2xl border-2 p-0 shadow-[var(--shadow-elevated)] sm:inset-x-auto sm:right-5 sm:top-auto sm:bottom-5 sm:mx-0 sm:h-[min(560px,calc(100vh-2.5rem))]">
           <div
             className="flex items-center justify-between px-4 py-3 text-primary-foreground"
             style={{ background: "var(--gradient-hero)" }}
