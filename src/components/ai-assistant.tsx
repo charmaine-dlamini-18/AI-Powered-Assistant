@@ -103,11 +103,12 @@ export function AIAssistant() {
               </div>
             </div>
             <button
+              type="button"
               onClick={() => setOpen(false)}
-              aria-label="Close"
-              className="rounded-md p-1 hover:bg-white/15"
+              aria-label="Close assistant"
+              className="grid h-9 w-9 place-items-center rounded-lg bg-white/15 transition hover:bg-white/30 active:bg-white/40"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </button>
           </div>
 
